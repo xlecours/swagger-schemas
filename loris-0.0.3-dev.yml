@@ -4,34 +4,99 @@ info:
   description: API for inserting dicoms and handling images within the LORIS Platform
   contact:
     name: LORIS Development Team
-    url: https://github.com/aces/loris
+    url: 'https://github.com/aces/loris'
   license:
-    name: GNU Public License, Version 3
-    url: https://opensource.org/licenses/GPL-3.0
+    name: 'GNU Public License, Version 3'
+    url: 'https://opensource.org/licenses/GPL-3.0'
   version: 0.0.3-dev
 servers:
-- url: https://xavier-dev.loris.ca/api/v0.0.3-dev
+  - url: 'https://xavier-dev.loris.ca/api/v0.0.3-dev'
 paths:
-  /candidates/{candid}/{visit}/dicoms:
+  '/login':
+    post:
+  '/projects':
+    get:
+  '/projects/{project}':
+    get:
+  '/projects/{project}/candidates':
+    get:
+  '/projects/{project}/images':
+    get:
+  '/projects/{project}/instruments':
+    get:
+  '/projects/{project}/instruments/{instrument}':
+    get:
+  '/projects/{project}/visits':
+    get:
+  '/candidates':
+    get:
+    post:
+  '/candidates/{candid}':
+    get:
+  '/candidates/{candid}/{visit}':
+    get:
+    put:
+  '/candidates/{candid}/{visit}/instruments':
+    get:
+  '/candidates/{candid}/{visit}/instruments/{instrument}':
+    get:
+    patch:
+    put:
+  '/candidates/{candid}/{visit}/instruments/{instrument}/flags':
+    get:
+    patch:
+    put:
+  '/candidates/{candid}/{visit}/instruments/{instrument}/dde':
+    get:
+    patch:
+    put:
+  '/candidates/{candid}/{visit}/instruments/{instrument}/dde/flags':
+    get:
+    patch:
+    put:
+  '/candidates/{candid}/{visit}/images':
+    get:
+  '/candidates/{candid}/{visit}/images/{filename}':
+    get:
+  '/candidates/{candid}/{visit}/images/{filename}/qc':
+    get:
+    put:
+  '/candidates/{candid}/{visit}/images/{filename}/format/brainbrowser':
+    get:
+  '/candidates/{candid}/{visit}/images/{filename}/format/raw':
+    get:
+  '/candidates/{candid}/{visit}/images/{filename}/format/thumbnail':
+    get:
+  '/candidates/{candid}/{visit}/images/{filename}/headers':
+    get:
+  '/candidates/{candid}/{visit}/images/{filename}/headers/full':
+    get:
+  '/candidates/{candid}/{visit}/images/{filename}/headers/{headername}':
+    get:
+  '/candidates/{candid}/{visit}/qc/imaging':
+    get:
+    put:
+    
+  '/candidates/{candid}/{visit}/dicoms':
     get:
       tags:
-      - Dicoms
+        - Dicoms
       summary: List all dicoms for that timepoint
       parameters:
-      - name: candid
-        in: path
-        description: ID of the candidate
-        required: true
-        schema:
-          type: string
-      - name: visit
-        in: path
-        description: This timepoint visit label
-        required: true
-        schema:
-          type: string
+        - name: candid
+          in: path
+          description: ID of the candidate
+          required: true
+          schema:
+            type: string
+        - name: visit
+          in: path
+          description: This timepoint visit label
+          required: true
+          schema:
+            type: string
       responses:
-        200:
+        '200':
           description: An object containing the list of dicoms
           content:
             application/json:
@@ -39,27 +104,28 @@ paths:
                 $ref: '#/components/schemas/Dicoms'
     post:
       tags:
-      - Dicoms
+        - Dicoms
       summary: Upload a dicom to this timepoint
       parameters:
-      - name: candid
-        in: path
-        description: ID of the candidate
-        required: true
-        schema:
-          type: string
-      - name: visit
-        in: path
-        description: This timepoint visit label
-        required: true
-        schema:
-          type: string
-      - name: LORIS-Overwrite
-        in: header
-        description: If set to 'overwrite', will replace server file with the same name
-        schema:
-          type: string
-          enum: [overwrite]
+        - name: candid
+          in: path
+          description: ID of the candidate
+          required: true
+          schema:
+            type: string
+        - name: visit
+          in: path
+          description: This timepoint visit label
+          required: true
+          schema:
+            type: string
+        - name: LORIS-Overwrite
+          in: header
+          description: 'If set to ''overwrite'', will replace server file with the same name'
+          schema:
+            type: string
+            enum:
+              - overwrite
       requestBody:
         content:
           multipart/mixed:
@@ -80,125 +146,124 @@ paths:
                   type: string
                 IsPhantom:
                   type: string
-                  enum: [true, false]
+                  enum:
+                    - true
+                    - false
                 mriFile:
                   type: string
                   format: binary
             encoding:
               mriFile:
-                contentType: application/gzip, application/tar, application/tar+gzip, application/x-tar
+                contentType: 'application/gzip, application/tar, application/tar+gzip, application/x-tar'
                 headers:
                   LORIS-Overwrite:
                     schema:
                       type: string
-                      enum: [overwrite, ]
+                      enum:
+                        - overwrite
       responses:
-        500: # If upload or database insertion fails
-          $ref: '#/components/responses/InternalServerError'
-        403:
-          description: 'The _imaging_uploader_ permission is required'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        303: 
-          description: On success, redirect to this dicom upload server processes (mri_upload)
+        '303':
+          description: 'On success, redirect to this dicom upload server processes (mri_upload)'
           headers:
             Location:
               schema:
                 type: string
               description: The URL of the processes.
-        
+        '403':
+          description: The _imaging_uploader_ permission is required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
       x-codegen-request-body-name: DicomUploadForm
-
-  /candidates/{candid}/{visit}/dicoms/{tarname}:
+  '/candidates/{candid}/{visit}/dicoms/{tarname}':
     get:
       tags:
-      - Dicoms
+        - Dicoms
       summary: Get the dicom file
       parameters:
-      - name: candid
-        in: path
-        description: ID of the candidate
-        required: true
-        schema:
-          type: string
-      - name: visit
-        in: path
-        description: This timepoint visit label
-        required: true
-        schema:
-          type: string
-      - name: tarname
-        in: path
-        description: The dicom filename
-        required: true
-        schema:
-          type: string
+        - name: candid
+          in: path
+          description: ID of the candidate
+          required: true
+          schema:
+            type: string
+        - name: visit
+          in: path
+          description: This timepoint visit label
+          required: true
+          schema:
+            type: string
+        - name: tarname
+          in: path
+          description: The dicom filename
+          required: true
+          schema:
+            type: string
       responses:
-        200:
+        '200':
           description: The dicom file content
           content:
             application/octet-stream:
               schema:
                 type: string
                 format: binary
-
-  /candidates/{candid}/{visit}/dicoms/{tarname}/processes:
+  '/candidates/{candid}/{visit}/dicoms/{tarname}/processes':
     get:
       tags:
-      - Dicoms
+        - Dicoms
       summary: List server processes executed on that dicom
       parameters:
-      - name: candid
-        in: path
-        description: ID of the candidate
-        required: true
-        schema:
-          type: string
-      - name: visit
-        in: path
-        description: This timepoint visit label
-        required: true
-        schema:
-          type: string
-      - name: tarname
-        in: path
-        description: The dicom filename
-        required: true
-        schema:
-          type: string
+        - name: candid
+          in: path
+          description: ID of the candidate
+          required: true
+          schema:
+            type: string
+        - name: visit
+          in: path
+          description: This timepoint visit label
+          required: true
+          schema:
+            type: string
+        - name: tarname
+          in: path
+          description: The dicom filename
+          required: true
+          schema:
+            type: string
       responses:
-        200:
+        '200':
           description: The processes list
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DicomProcesses'
-          
     post:
       tags:
         - Dicoms
       summary: Start a server process on that dicom
       parameters:
-      - name: candid
-        in: path
-        description: ID of the candidate
-        required: true
-        schema:
-          type: string
-      - name: visit
-        in: path
-        description: This timepoint visit label
-        required: true
-        schema:
-          type: string
-      - name: tarname
-        in: path
-        description: The dicom filename
-        required: true
-        schema:
-          type: string
+        - name: candid
+          in: path
+          description: ID of the candidate
+          required: true
+          schema:
+            type: string
+        - name: visit
+          in: path
+          description: This timepoint visit label
+          required: true
+          schema:
+            type: string
+        - name: tarname
+          in: path
+          description: The dicom filename
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
@@ -210,50 +275,50 @@ paths:
               properties:
                 ProcessType:
                   type: string
-                  enum: [mri_upload]
+                  enum:
+                    - mri_upload
                 MRIUploadID:
                   type: number
       responses:
-        202: 
-          description: On success, put the generated server processes location in the headers
+        '202':
+          description: 'On success, put the generated server processes location in the headers'
           headers:
             Location:
               schema:
                 type: string
               description: The URL of the processes.
-      
-  /candidates/{candid}/{visit}/dicoms/{tarname}/processes/{processid}:
+  '/candidates/{candid}/{visit}/dicoms/{tarname}/processes/{processid}':
     get:
       tags:
         - Dicoms
       summary: Get the state of a server process
       parameters:
-      - name: candid
-        in: path
-        description: ID of the candidate
-        required: true
-        schema:
-          type: string
-      - name: visit
-        in: path
-        description: This timepoint visit label
-        required: true
-        schema:
-          type: string
-      - name: tarname
-        in: path
-        description: The dicom filename
-        required: true
-        schema:
-          type: string
-      - name: processid
-        in: path
-        description: The process id
-        required: true
-        schema:
-          type: number
+        - name: candid
+          in: path
+          description: ID of the candidate
+          required: true
+          schema:
+            type: string
+        - name: visit
+          in: path
+          description: This timepoint visit label
+          required: true
+          schema:
+            type: string
+        - name: tarname
+          in: path
+          description: The dicom filename
+          required: true
+          schema:
+            type: string
+        - name: processid
+          in: path
+          description: The process id
+          required: true
+          schema:
+            type: number
       responses:
-        200:
+        '200':
           description: The process state
           content:
             application/json:
@@ -264,10 +329,8 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Process'
-
 components:
   schemas:
-
     Dicoms:
       type: object
       properties:
@@ -282,7 +345,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DicomTar'
-
     DicomTar:
       type: object
       properties:
@@ -292,7 +354,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SeriesInfo'
-
     SeriesInfo:
       type: object
       properties:
@@ -311,11 +372,10 @@ components:
         Modality:
           type: string
           enum:
-          - MR
-          - PT
+            - MR
+            - PT
         SeriesUID:
           type: string
-
     DicomProcesses:
       type: object
       properties:
@@ -323,7 +383,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MRIUploadProcesses'
-            
     MRIUploadProcesses:
       type: object
       properties:
@@ -333,7 +392,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Process'
-
     Process:
       type: object
       properties:
@@ -345,13 +403,14 @@ components:
           type: string
         PROGRESS:
           type: string
-          enum: [SUCCESS,RUNNING,ERROR]
+          enum:
+            - SUCCESS
+            - RUNNING
+            - ERROR
         EXIT_CODE:
           type: string
         END_TIME:
           type: string
-
-    # Schema for error response body
     Error:
       type: object
       properties:
@@ -360,21 +419,17 @@ components:
           type: string
       required:
         - error
-        
   responses:
-  
     InternalServerError:
       description: 500 Internal server error
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-  
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
       name: Authorization
       in: header
-
 security:
   - ApiKeyAuth: []
