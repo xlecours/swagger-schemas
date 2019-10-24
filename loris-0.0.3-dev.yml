@@ -10,12 +10,12 @@ info:
     url: 'https://opensource.org/licenses/GPL-3.0'
   version: 0.0.3-dev
 servers:
-- url: /api/v0.0.3-dev
+  - url: /api/v0.0.3-dev
 paths:
-  '/login':
+  /login:
     post:
       tags:
-      - Login
+        - Login
       requestBody:
         content:
           application/json:
@@ -39,14 +39,13 @@ paths:
                 properties:
                   token:
                     type: string
-
-  '/projects':
+  /projects:
     get:
       tags:
-      - Projects
+        - Projects
       summary: List all projects
       responses:
-        200:
+        '200':
           description: An object with projects as properties
           content:
             application/json:
@@ -54,12 +53,11 @@ paths:
                 type: object
                 properties:
                   Projects:
-                    type: object # FIXME this should be an array of projects
-                    
+                    type: object
   '/projects/{project}':
     get:
       tags:
-      - Projects
+        - Projects
       summary: Get that project descriptor
       parameters:
         - name: project
@@ -69,17 +67,16 @@ paths:
           schema:
             type: string
       responses:
-        200:
+        '200':
           description: An object containing the project descriptor
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Project'
-          
   '/projects/{project}/candidates':
     get:
       tags:
-      - Projects
+        - Projects
       summary: List all candidates of that project
       parameters:
         - name: project
@@ -89,17 +86,16 @@ paths:
           schema:
             type: string
       responses:
-        200:
+        '200':
           description: An object containing the list of candidates
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProjectCandidates'
-                
   '/projects/{project}/images':
     get:
       tags:
-      - Projects
+        - Projects
       summary: List all images of that project
       parameters:
         - name: project
@@ -110,22 +106,21 @@ paths:
             type: string
         - name: since
           in: query
-          description: A date 
+          description: A date
           required: true
           schema:
             type: string
       responses:
-        200:
+        '200':
           description: An object containing the list of image descriptors
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProjectImages'
-                
   '/projects/{project}/instruments':
     get:
       tags:
-      - Projects
+        - Projects
       summary: List all instruments of that project
       parameters:
         - name: project
@@ -135,17 +130,16 @@ paths:
           schema:
             type: string
       responses:
-        200:
+        '200':
           description: An object containing the list of instrument summary descriptors
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProjectInstruments'
-                
   '/projects/{project}/instruments/{instrument}':
     get:
       tags:
-      - Projects
+        - Projects
       summary: Get an instrument descriptor in that project
       parameters:
         - name: project
@@ -161,17 +155,16 @@ paths:
           schema:
             type: string
       responses:
-        200:
+        '200':
           description: An JSON representation of the instrument form
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProjectInstrument'
-                
   '/projects/{project}/visits':
     get:
       tags:
-      - Projects
+        - Projects
       summary: List all existing visit label of that project
       parameters:
         - name: project
@@ -181,29 +174,27 @@ paths:
           schema:
             type: string
       responses:
-        200:
+        '200':
           description: An object containing the list of instrument summary descriptors
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProjectVisits'
-                
-  '/candidates':
+  /candidates:
     get:
       tags:
-      - Candidates
+        - Candidates
       summary: List all candidates in this LORIS instance
       responses:
-        200:
+        '200':
           description: An object containing the list of instrument summary descriptors
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Candidates'
-      
     post:
       tags:
-      - Candidates
+        - Candidates
       summary: Create a candidate
       requestBody:
         content:
@@ -217,11 +208,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Candidate'
-      
   '/candidates/{candid}':
     get:
       tags:
-      - Candidates
+        - Candidates
       summary: Get a JSON object representing that candidate
       parameters:
         - name: candid
@@ -244,11 +234,10 @@ paths:
                     type: array
                     items:
                       type: string
-                
   '/candidates/{candid}/{visit}':
     get:
       tags:
-      - Visit
+        - Visit
       summary: Get a visit descriptor for that candidate
       parameters:
         - name: candid
@@ -274,7 +263,7 @@ paths:
                   - $ref: '#/components/schemas/VisitStages'
     put:
       tags:
-      - Visit
+        - Visit
       summary: Add a timepoint to that candidate
       parameters:
         - name: candid
@@ -302,12 +291,10 @@ paths:
               schema:
                 type: string
               description: The URL of the new visit.
-          
-          
   '/candidates/{candid}/{visit}/instruments':
     get:
       tags:
-      - Instruments
+        - Instruments
       summary: List all instruments of that timepoint
       parameters:
         - name: candid
@@ -334,13 +321,13 @@ paths:
                     $ref: '#/components/schemas/TimepointMeta'
                   Instruments:
                     type: array
-                    items: 
+                    items:
                       type: string
-
+                      
   '/candidates/{candid}/{visit}/instruments/{instrument}':
     get:
       tags:
-      - Instruments
+        - Instruments
       summary: Get an instrument data values
       parameters:
         - name: candid
@@ -360,10 +347,18 @@ paths:
           description: The instrument short name
           required: true
           schema:
-            type: string    
+            type: string
+      responses:
+        '200':
+          description: This instrument data values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instrument'
+                    
     patch:
       tags:
-      - Instruments
+        - Instruments
       summary: Update some data values of an instrument
       parameters:
         - name: candid
@@ -384,9 +379,18 @@ paths:
           required: true
           schema:
             type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Instrument'
+      responses:
+        '204':
+          description: This instrument data values have been saved
+          
     put:
       tags:
-      - Instruments
+        - Instruments
       summary: Set an instrument data values
       parameters:
         - name: candid
@@ -407,12 +411,20 @@ paths:
           required: true
           schema:
             type: string
-            
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Instrument'
+      responses:
+        '204':
+          description: This instrument data values have been saved
+          
   '/candidates/{candid}/{visit}/instruments/{instrument}/flags':
     get:
       tags:
-      - Instruments
-      summary: Get an instrument flags
+        - Instruments
+      summary: Get an instrument flags values
       parameters:
         - name: candid
           in: path
@@ -432,11 +444,18 @@ paths:
           required: true
           schema:
             type: string
-            
+      responses:
+        '200':
+          description: This instrument flags values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstrumentFlags'
+                    
     patch:
       tags:
-      - Instruments
-      summary: Update some flags of an instrument
+        - Instruments
+      summary: Update some flags values of an instrument
       parameters:
         - name: candid
           in: path
@@ -456,11 +475,23 @@ paths:
           required: true
           schema:
             type: string
-            
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstrumentFlags'
+      responses:
+        '501':
+          description: This instrument flags values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          
     put:
       tags:
-      - Instruments
-      summary: Set an instrument flags
+        - Instruments
+      summary: Set an instrument flags values
       parameters:
         - name: candid
           in: path
@@ -480,12 +511,24 @@ paths:
           required: true
           schema:
             type: string
-            
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstrumentFlags'
+      responses:
+        '501':
+          description: This instrument flags values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          
   '/candidates/{candid}/{visit}/instruments/{instrument}/dde':
     get:
       tags:
-      - Instruments
-      summary: Get a double data entry instrument data values
+        - Instruments
+      summary: Get an instrument data values
       parameters:
         - name: candid
           in: path
@@ -504,11 +547,19 @@ paths:
           description: The instrument short name
           required: true
           schema:
-            type: string    
+            type: string
+      responses:
+        '200':
+          description: This instrument data values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instrument'
+                    
     patch:
       tags:
-      - Instruments
-      summary: Update some data values of a double data entry instrument
+        - Instruments
+      summary: Update some data values of an instrument
       parameters:
         - name: candid
           in: path
@@ -528,10 +579,19 @@ paths:
           required: true
           schema:
             type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Instrument'
+      responses:
+        '204':
+          description: This instrument data values have been saved
+          
     put:
       tags:
-      - Instruments
-      summary: Set a double data entry instrument data values
+        - Instruments
+      summary: Set an instrument data values
       parameters:
         - name: candid
           in: path
@@ -551,11 +611,20 @@ paths:
           required: true
           schema:
             type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Instrument'
+      responses:
+        '204':
+          description: This instrument data values have been saved
+          
   '/candidates/{candid}/{visit}/instruments/{instrument}/dde/flags':
     get:
       tags:
-      - Instruments
-      summary: Get a double data entry instrument flags
+        - Instruments
+      summary: Get an instrument flags values
       parameters:
         - name: candid
           in: path
@@ -575,11 +644,18 @@ paths:
           required: true
           schema:
             type: string
-            
+      responses:
+        '200':
+          description: This instrument flags values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstrumentFlags'
+                    
     patch:
       tags:
-      - Instruments
-      summary: Update some flags of a double data entry instrument
+        - Instruments
+      summary: Update some flags values of an instrument
       parameters:
         - name: candid
           in: path
@@ -599,11 +675,23 @@ paths:
           required: true
           schema:
             type: string
-            
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstrumentFlags'
+      responses:
+        '501':
+          description: This instrument flags values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          
     put:
       tags:
-      - Instruments
-      summary: Set a double data entry instrument flags
+        - Instruments
+      summary: Set an instrument flags values
       parameters:
         - name: candid
           in: path
@@ -623,11 +711,23 @@ paths:
           required: true
           schema:
             type: string
-            
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstrumentFlags'
+      responses:
+        '501':
+          description: This instrument flags values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      
   '/candidates/{candid}/{visit}/images':
     get:
       tags:
-      - Images
+        - Images
       summary: List all images of a timepoint
       parameters:
         - name: candid
@@ -642,10 +742,18 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        '200':
+           description: The images list
+           content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Images'
+           
   '/candidates/{candid}/{visit}/images/{filename}':
     get:
       tags:
-      - Images
+        - Images
       summary: Get an images of a timepoint
       parameters:
         - name: candid
@@ -666,11 +774,19 @@ paths:
           required: true
           schema:
             type: string
-            
+      responses:
+        '200':
+          description: The file content
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        
   '/candidates/{candid}/{visit}/images/{filename}/qc':
     get:
       tags:
-      - Images
+        - Images
       summary: Get the qc values of an image
       parameters:
         - name: candid
@@ -691,10 +807,17 @@ paths:
           required: true
           schema:
             type: string
-            
+      responses:
+        '200':
+           description: The images list
+           content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageQc'
+        
     put:
       tags:
-      - Images
+        - Images
       summary: Set the qc values of an image
       parameters:
         - name: candid
@@ -715,11 +838,19 @@ paths:
           required: true
           schema:
             type: string
-            
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageQc'
+      responses:
+        '204':
+          description: Qc value updated
+          
   '/candidates/{candid}/{visit}/images/{filename}/format/brainbrowser':
     get:
       tags:
-      - Images
+        - Images
       summary: Get the brainbrowser format of an image
       parameters:
         - name: candid
@@ -740,11 +871,10 @@ paths:
           required: true
           schema:
             type: string
-            
   '/candidates/{candid}/{visit}/images/{filename}/format/raw':
     get:
       tags:
-      - Images
+        - Images
       summary: Get the raw format of an image
       parameters:
         - name: candid
@@ -765,11 +895,10 @@ paths:
           required: true
           schema:
             type: string
-            
   '/candidates/{candid}/{visit}/images/{filename}/format/thumbnail':
     get:
       tags:
-      - Images
+        - Images
       summary: Get the thumbnail format of an image
       parameters:
         - name: candid
@@ -790,11 +919,10 @@ paths:
           required: true
           schema:
             type: string
-            
   '/candidates/{candid}/{visit}/images/{filename}/headers':
     get:
       tags:
-      - Images
+        - Images
       summary: Get the summary headers of an image
       parameters:
         - name: candid
@@ -818,7 +946,7 @@ paths:
   '/candidates/{candid}/{visit}/images/{filename}/headers/full':
     get:
       tags:
-      - Images
+        - Images
       summary: Get all headers of an image
       parameters:
         - name: candid
@@ -842,7 +970,7 @@ paths:
   '/candidates/{candid}/{visit}/images/{filename}/headers/{headername}':
     get:
       tags:
-      - Images
+        - Images
       summary: Get a specific header of an image
       parameters:
         - name: candid
@@ -869,7 +997,6 @@ paths:
           required: true
           schema:
             type: string
-            
   '/candidates/{candid}/{visit}/qc/imaging':
     get:
       tags:
@@ -888,10 +1015,38 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        '200':
+           description: The images list
+           content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageQc'
     put:
       tags:
         - Visit
-    
+      parameters:
+        - name: candid
+          in: path
+          description: The candidate identifier
+          required: true
+          schema:
+            type: string
+        - name: visit
+          in: path
+          description: The visit label
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageQc'
+      responses:
+        '204':
+          description: Qc value updated
+          
   '/candidates/{candid}/{visit}/dicoms':
     get:
       tags:
@@ -1207,10 +1362,16 @@ components:
           type: string
         QC_status:
           type: string
-          enum: [Pass, Fail, 'null']
+          enum:
+            - Pass
+            - Fail
+            - 'null'
         Selected:
           type: string
-          enum: [true, false, 'null']
+          enum:
+            - true
+            - false
+            - 'null'
         Link:
           type: string
         InsertTime:
@@ -1224,8 +1385,7 @@ components:
             Project:
               type: string
         Instruments:
-          type: object # FIXME this should be an array of instrument descriptors
-            
+          type: object
     ProjectInstrument:
       type: object
       properties:
@@ -1303,35 +1463,39 @@ components:
       properties:
         CandID:
           type: string
-        Project: 
+        Project:
           type: string
-        PSCID: 
+        PSCID:
           type: string
-        Site: 
+        Site:
           type: string
-        EDC: 
+        EDC:
           type: string
-        DoB: 
+        DoB:
           type: string
-        Sex: 
+        Sex:
           type: string
-          enum: [Female, Male]
+          enum:
+            - Female
+            - Male
     NewCandidate:
       type: object
       properties:
-        Project: 
+        Project:
           type: string
-        PSCID: 
+        PSCID:
           type: string
-        Site: 
+        Site:
           type: string
-        EDC: 
+        EDC:
           type: string
-        DoB: 
+        DoB:
           type: string
-        Sex: 
+        Sex:
           type: string
-          enum: [Female, Male]
+          enum:
+            - Female
+            - Male
     VisitMeta:
       type: object
       properties:
@@ -1342,25 +1506,48 @@ components:
       properties:
         CandID:
           type: string
-        Visit: 
+        Visit:
           type: string
-        Site: 
+        Site:
           type: string
-        Battery: 
+        Battery:
           type: string
     VisitStages:
       type: object
       properties:
         Stages:
-          type: object #FIXME this should be an array of stages
-          additionalProperties:
-            type: object
-            properties:
-              Date:
-                type: string
-              Status:
-                type: string
-                enum: [Pass,Failure,Withdrawal,In Progress]
+          type: object
+          anyOf:
+            - $ref: '#/components/schemas/InstrumentScreening'
+            - $ref: '#/components/schemas/InstrumentVisit'
+            - $ref: '#/components/schemas/InstrumentApproval'
+    VisitStage:
+      type: object
+      properties:
+        Date:
+          type: string
+        Status:
+          type: string
+          enum:
+            - Pass
+            - Failure
+            - Withdrawal
+            - In Progress
+    InstrumentScreening:
+      type: object
+      properties:
+        Screening:
+          $ref: '#/components/schemas/VisitStage'
+    InstrumentVisit:
+      type: object
+      properties:
+        Visit:
+          $ref: '#/components/schemas/VisitStage'
+    InstrumentApproval:
+      type: object
+      properties:
+        Approval:
+          $ref: '#/components/schemas/VisitStage'
     TimepointMeta:
       type: object
       properties:
@@ -1368,6 +1555,75 @@ components:
           type: string
         Visit:
           type: string
+          
+    Instrument:
+      type: object
+      properties:
+        Meta:
+          $ref: '#/components/schemas/InstrumentMeta'
+        $InstrumentShortName:
+          $ref: '#/components/schemas/InstrumentData'
+
+    InstrumentMeta:
+      type: object
+      properties:
+        Instrument:
+          type: string
+        Visit:
+          type: string
+        Candidate:
+          type: string
+        DDE:
+          type: boolean
+    InstrumentData:
+      type: object
+      additionalProperties:
+        type: string
+        
+    InstrumentFlags:
+      type: object
+      properties:
+        Meta:
+          $ref: '#/components/schemas/InstrumentMeta'
+        Flags:
+          type: object
+          properties:
+            Data_entry: 
+              type: string
+              enum: [In Progress,Complete]
+            Administration: 
+              type: string
+              enum: [None,Partial,All]
+            Validity:
+              type: string
+              enum: [Questionable,Invalid,Valid]
+    Images:
+      type: object
+      properties:
+        Meta: 
+          $ref: '#/components/schemas/TimepointMeta'
+        Files:
+          type: array
+          items:
+            type: object
+            properties:
+              OutputType: 
+                type: string
+              Filename: 
+                type: string
+              AcquisitionType: 
+                type: string
+    ImageQc:
+      type: object
+      properties:
+        Meta: 
+          $ref: '#/components/schemas/TimepointMeta'
+        SessionQC:
+          type: string
+          enum: [Pass,Fail]
+        Pending:
+          type: boolean
+        
     Dicoms:
       type: object
       properties:
@@ -1448,7 +1704,6 @@ components:
           type: string
         END_TIME:
           type: string
-
     Error:
       type: object
       properties:
