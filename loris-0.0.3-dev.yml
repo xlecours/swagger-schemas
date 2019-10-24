@@ -809,7 +809,7 @@ paths:
             type: string
       responses:
         '200':
-           description: The images list
+           description: The images qc values
            content:
             application/json:
               schema:
@@ -871,6 +871,14 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        '200':
+           description: The images list
+           content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormatBrainbrowser'
+                
   '/candidates/{candid}/{visit}/images/{filename}/format/raw':
     get:
       tags:
@@ -895,6 +903,15 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        '200':
+          description: The the output of mnc2raw
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+                
   '/candidates/{candid}/{visit}/images/{filename}/format/thumbnail':
     get:
       tags:
@@ -919,6 +936,15 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        '200':
+          description: The thumbnail representation of this image
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+                
   '/candidates/{candid}/{visit}/images/{filename}/headers':
     get:
       tags:
@@ -943,6 +969,14 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        '200':
+           description: The images summary headers
+           content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageSummaryHeaders'
+                
   '/candidates/{candid}/{visit}/images/{filename}/headers/full':
     get:
       tags:
@@ -967,6 +1001,14 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        '200':
+           description: The images complete headers
+           content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageHeaders'
+                
   '/candidates/{candid}/{visit}/images/{filename}/headers/{headername}':
     get:
       tags:
@@ -997,6 +1039,27 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        '200':
+           description: The header value
+           content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Meta:
+                    type: object
+                    properties:
+                      CandID: 
+                        type: string
+                      Visit:  
+                        type: string
+                      File:  
+                        type: string
+                      Header:  
+                        type: string
+                  Value:
+                    type: string
   '/candidates/{candid}/{visit}/qc/imaging':
     get:
       tags:
@@ -1021,7 +1084,7 @@ paths:
            content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ImageQc'
+                $ref: '#/components/schemas/ImagingQc'
     put:
       tags:
         - Visit
@@ -1042,7 +1105,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ImageQc'
+              $ref: '#/components/schemas/ImagingQc'
       responses:
         '204':
           description: Qc value updated
@@ -1613,7 +1676,7 @@ components:
                 type: string
               AcquisitionType: 
                 type: string
-    ImageQc:
+    ImagingQc:
       type: object
       properties:
         Meta: 
@@ -1623,7 +1686,131 @@ components:
           enum: [Pass,Fail]
         Pending:
           type: boolean
+    
+    ImageQc:
+      type: object
+      properties:
+        Meta: 
+          $ref: '#/components/schemas/ImageMeta'
+        QC:
+          type: string
+          enum: [Pass, Fail]
+        Selected:
+          type: boolean
+        Caveats:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageCaveat'
+    ImageCaveat:
+      type: object
+      properties:
+        Severity:
+          type: string
+        Header:
+          type: string
+        Value:
+          type: string
+        ValidRange:
+          type: string
+        ValidRegex:
+          type: string
         
+    ImageMeta:
+      type: object
+      properties:
+        CandID:
+          type: string
+        Visit:
+          type: string
+        File:
+          type: string
+    
+    FormatBrainbrowser:
+      type: object
+      properties:
+        xspace:
+          $ref: '#/components/schemas/BrainbrowserSpace'
+        yspace:
+          $ref: '#/components/schemas/BrainbrowserSpace'
+        zspace:
+          $ref: '#/components/schemas/BrainbrowserSpace'
+        order:
+          type: string
+          enum: [xspace, zspace, yspace]
+    BrainbrowserSpace:
+      type: object
+      properties:
+        start:
+          type: string
+        space_length: 
+          type: string
+        step:
+          type: string
+    ImageSummaryHeaders:
+      type: object
+      properties:
+        Meta:
+          $ref: '#/components/schemas/ImageMeta'
+        Physical:
+          type: object
+          properties:
+            TE:
+              type : string
+            TR:
+              type: string
+            TI:
+              type: string
+            SliceThickness: 
+              type: string
+        Description:
+          type: object
+          properties:
+            SeriesName:
+              type: string
+            SeriesDescription:
+              type: string
+        Dimensions:
+          type: object
+          properties:
+            XSpace:
+              $ref: '#/components/schemas/DimensionHeaders'
+            YSpace:
+              $ref: '#/components/schemas/DimensionHeaders'
+            ZSpace:
+              $ref: '#/components/schemas/DimensionHeaders'
+            TimeDimension:
+              $ref: '#/components/schemas/DimensionHeaders'
+        ScannerInfo:
+          type: object
+          properties:
+            Manufacturer:
+              type: string
+            Model: 
+              type: string
+            SoftwareVersion: 
+              type: string
+            SerialNumber: 
+              type: string
+            FieldStrength: 
+              type: string
+            
+    DimensionHeaders:
+      type: object
+      properties:
+        Lenght:
+          type: string
+        StepSize:
+          type: string
+    ImageHeaders:
+      type: object
+      properties:
+        Meta:
+          $ref: '#/components/schemas/ImageMeta'
+        Headers:
+          type: object
+          additionalProperties:
+            type: string
+    
     Dicoms:
       type: object
       properties:
