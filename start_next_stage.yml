@@ -1,0 +1,119 @@
+openapi: 3.0.1
+info:
+  title: LORIS - Imaging endpoints
+  description: API for inserting dicoms and handling images within the LORIS Platform
+  contact:
+    name: LORIS Development Team
+    url: 'https://github.com/aces/loris'
+  license:
+    name: 'GNU Public License, Version 3'
+    url: 'https://opensource.org/licenses/GPL-3.0'
+  version: 0.0.3-dev
+servers:
+  - url: /api/v0.0.3-dev
+paths:
+
+  '/candidates/{candid}/{visit}/stages':
+    get:
+      tags:
+        - Visit
+      summary: Get a visit descriptor for that candidate
+      parameters:
+        - name: candid
+          in: path
+          description: The candidate identifier
+          required: true
+          schema:
+            type: string
+        - name: visit
+          in: path
+          description: The visit label
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The visit stages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisitStages'
+    put:
+      tags:
+        - Visit
+      summary: Add a timepoint to that candidate
+      parameters:
+        - name: candid
+          in: path
+          description: The candidate identifier
+          required: true
+          schema:
+            type: string
+        - name: visit
+          in: path
+          description: The visit label
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VisitStages'
+      responses:
+        '201':
+          description: The visit was created successfully
+          headers:
+            Content-Location:
+              schema:
+                type: string
+              description: The URL of the new visit.
+
+components:
+  schemas:
+
+    VisitStages:
+      type: object
+      properties:
+        Stages:
+          type: object
+          anyOf:
+            - $ref: '#/components/schemas/InstrumentScreening'
+            - $ref: '#/components/schemas/InstrumentVisit'
+            - $ref: '#/components/schemas/InstrumentApproval'
+    VisitStage:
+      type: object
+      properties:
+        Date:
+          type: string
+        Status:
+          type: string
+          enum:
+            - Pass
+            - Failure
+            - Withdrawal
+            - In Progress
+    InstrumentScreening:
+      type: object
+      properties:
+        Screening:
+          $ref: '#/components/schemas/VisitStage'
+    InstrumentVisit:
+      type: object
+      properties:
+        Visit:
+          $ref: '#/components/schemas/VisitStage'
+    InstrumentApproval:
+      type: object
+      properties:
+        Approval:
+          $ref: '#/components/schemas/VisitStage'
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+security:
+  - ApiKeyAuth: []
+
